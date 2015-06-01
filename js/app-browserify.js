@@ -11,38 +11,20 @@ require("babel/register")
 
 var urls = [ 'https://api.github.com/users/paulesaad','https://api.github.com/users/paulesaad/repos' ]
 
-var promises = urls.map((url) => fetch(url).then((r) => r.json()))
+var requests = urls.map((url) => fetch(url).then((r) => r.json()))
 
+function qs(selector) {
+    return document.querySelector(selector)
+}
 
-//Creates array with JSON of profile information in 0th index and repo info in 1st index
-var sort = Promise.all(promises).then((data_array) => {
-    var profile_info = data_array[0]
-    var repo_info = data_array[1]
+Promise.all(requests).then((data) => {
+    var profile = data[0],
+        repos = data[1]
+
+    var profile_string = ['name', 'login', 'blog', 'location', 'email', 'html_url'].map((key) => `<li>${key}: ${profile[key]}</li>`).join('')
+    var repo_string = repos.map((repo) => `<li><a href="${repo.html_url}">${repo.name}</a></li>`).join('')
+
+    qs('.profile img').src = profile.avatar_url
+    qs('.profile ul').innerHTML = profile_string
+    qs('.repos ul').innerHTML = repo_string
 })
-
-//Creates profComps with array of objects including profile info & repoNames with an array of repo names.
-var sorted = sort.then((data_array) => {
-	var neededComps = [name, login, blog, location, email, html_url]
-	var profComps = neededComps.map((v) => `${v} : ${profile_info.v}`)
-	var repoNames = repo_info.map((v) => v.name)
-	console.log(profComps)
-	console.log(repoNames)
-})
-
-var prof_listify = (arr) => {
-	arr.forEach((v) =>
-	document.querySelector('.infolist').innerHTML = `<li>${Object.keys(v) : ${v[Object.keys(v)]}}</li>`
-	)
-}
-
-var repos_listify = (arr) => {
-	array.forEach((v) =>
-	document.querySelector('.repolist').innerHTML = `<li>${v}</li>`
-	)
-}
-
-sorted.then(() => {
-	document.querySelector('.profile').innerHTML = `<img src=${profile_info.avatar_url}>`
-	prof_listify(profComps)
-	repos_listify(repoNames)
-}

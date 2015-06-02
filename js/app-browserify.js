@@ -1,10 +1,11 @@
 "use strict";
 
 var Promise = require('es6-promise').Promise
-require('whatwg-fetch') //--> not a typo, don't store as a var
+require('whatwg-fetch')
 
-// es6 polyfills, powered by babel
 require("babel/register")
+
+var Backbone = require("backbone")
 
 function qs(selector) {
        return document.querySelector(selector)
@@ -20,8 +21,8 @@ function GithubClient(loginname){
 }
 
 //prototype methods/functions need names!  `GHClient.prototype.doSomething =` NOT `ghClient.prototype =`
-GithubClient.prototype.getData = function(username){
-    var token = "935280686f668629fabc82a9a54c4d14e238cd9f"
+GithubClient.prototype.createProfile = function(){
+    var token = "160b4dd92e3af45f0d30e84ea4747e5196c9b6ba"
 
     var urls = [
     	`https://api.github.com/users/${this.username}?access_token=${token}`, 
@@ -49,20 +50,27 @@ GithubClient.prototype.getData = function(username){
 var paulSaadClient = new GithubClient('paulesaad')
 
 
-paulSaadClient.getData();
+paulSaadClient.createProfile();
 
 //----------------------------------
 //ROUTER
-var Backbone = require("backbone")
 var GithubRouter = Backbone.Router.extend({
     routes: {
         ':username': 'drawProfile'
     },
     drawProfile: function(user){
-        new GithubClient(user).getData()
+        new GithubClient(user).createProfile()
     },
     initialize: function(){
         Backbone.history.start()
     }
 })
 var router = new GithubRouter()
+
+var node = document.querySelector('form')
+
+node.addEventListener('submit', (e) => {
+    e.preventDefault()
+	window.location.hash = node.querySelector('input').value
+})
+

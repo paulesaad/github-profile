@@ -21,7 +21,7 @@ function GithubClient(loginname){
 
 //prototype methods/functions need names!  `GHClient.prototype.doSomething =` NOT `ghClient.prototype =`
 GithubClient.prototype.getData = function(username){
-    var token = "1654ffd6cec30f98ef118dd04c758bf3b9dde323"
+    var token = "935280686f668629fabc82a9a54c4d14e238cd9f"
 
     var urls = [
     	`https://api.github.com/users/${this.username}?access_token=${token}`, 
@@ -47,8 +47,22 @@ GithubClient.prototype.getData = function(username){
 //----------------------------------
 //EXECUTION CODE
 var paulSaadClient = new GithubClient('paulesaad')
-var travisClient = new GithubClient('t3patterson')
 
 
 paulSaadClient.getData();
 
+//----------------------------------
+//ROUTER
+var Backbone = require("backbone")
+var GithubRouter = Backbone.Router.extend({
+    routes: {
+        ':username': 'drawProfile'
+    },
+    drawProfile: function(user){
+        new GithubClient(user).getData()
+    },
+    initialize: function(){
+        Backbone.history.start()
+    }
+})
+var router = new GithubRouter()
